@@ -1,0 +1,68 @@
+Testbench Architecture
+=======================
+
+The testbench is designed to verify the functional correctness of the ALU module using a structured, layered verification environment. The overall verification architecture follows a modular approach and consists of the following major components:
+
+1. Test
+-------
+This is the top-level module that instantiates the environment and controls simulation execution.
+- Initiates test sequences.
+- Captures overall pass/fail status.
+
+2. Environment (Env)
+---------------------
+The environment encapsulates all the testbench components:
+- Generator
+- Driver
+- Monitor
+- Scoreboard
+
+It coordinates the stimulus generation, DUT interaction, and result checking.
+
+3. Generator
+-------------
+The generator creates directed test vectors (stimulus packets), which include:
+- Feature ID
+- Operands A and B
+- Control signals (CE, CMD, MODE, INP_VALID)
+- Input CIN
+- Outputs Expected Result, flags like EGL, Overflow, Cout, ERR etc. 
+
+These are passed to the driver to be applied to the DUT.
+
+4. Driver
+----------
+The driver takes input transactions from the generator and drives them to the DUT through the interface.
+- Handles timing synchronization with the clock.
+- Ensures proper sequencing and validity of applied inputs.
+
+5. Interface
+-------------
+The interface bridges the testbench and DUT, carrying:
+- Inputs to the DUT: OPA, OPB, CMD, CIN, CE, MODE, etc.
+- Outputs from the DUT: RES, OFLOW, COUT, ERR, EGL flags
+
+It mimics the I/O ports of the DUT.
+
+6. DUT (Design Under Test)
+---------------------------
+This is the actual ALU module.
+- Performs operations as per the input command.
+- Produces the result and flags.
+- Core of the simulation.
+
+7. Monitor
+-----------
+The monitor passively observes the DUT outputs via the interface without influencing them.
+- Captures actual outputs and flags from the DUT.
+- Formats and sends them to the scoreboard.
+
+8. Scoreboard
+--------------
+The scoreboard compares:
+- The expected results (based on stimulus inputs)
+- The actual DUT outputs (from the monitor)
+
+It logs pass/fail status for each test and highlights mismatches.
+Ensures functional correctness of the DUT.
+
