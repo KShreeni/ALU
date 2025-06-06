@@ -46,6 +46,10 @@ The ALU is designed to be:
 | `4'b1100`    | `ROL_A_B / S_UNS_SUB`  | 0 / 1       | Rotate Left A by B / Signed-Unsigned Subtraction |
 | `4'b1101`    | `ROR_A_B`              | 0           | Rotate Right A by B                              |
 
+## Future Improvements
+
+- **Expand Operation Set**  
+  Add more advanced arithmetic functions such as division, modulus, or floating-point operations using additional `CMD` values.
 
 ---
 
