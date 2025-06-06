@@ -46,6 +46,36 @@ The ALU is designed to be:
 | `4'b1100`    | `ROL_A_B / S_UNS_SUB`  | 0 / 1       | Rotate Left A by B / Signed-Unsigned Subtraction |
 | `4'b1101`    | `ROR_A_B`              | 0           | Rotate Right A by B                              |
 
+##  Working Methodology
+
+The ALU (Arithmetic Logic Unit) is a parameterized Verilog module designed to perform a wide range of arithmetic and logical operations based on input control signals. The module operates in a clocked and pipelined fashion, ensuring proper sequencing of multi-cycle operations. Here's a step-by-step overview of how it works:
+
+1. **Input Latching and Validation**  
+   - The ALU accepts operands `OPA` and `OPB`, a command `CMD`, mode `MODE`, and a 2-bit input validity signal `INP_VALID`.
+   - Only when valid input combinations are received (e.g., `INP_VALID == 2'b11`), the operation proceeds.
+
+2. **Mode-Based Operation Selection**  
+   - The `MODE` signal selects between **Arithmetic** (`MODE = 1`) and **Logical/Shift** (`MODE = 0`) operations.
+   - Each operation is identified by a specific command (`CMD`) value.
+
+3. **Operation Decoding & Execution**  
+   - Arithmetic operations include: `ADD`, `SUB`, `INC_A`, `DEC_B`, etc.
+   - Logical operations include: `AND`, `OR`, `XOR`, `NOT_A`, etc.
+   - Special operations like shift/rotate (`SHL1_A`, `ROR_A_B`) and signed math (`S_UNS_ADD`, `S_UNS_SUB`) are supported.
+   - Multiplication operations (`INC1_MUL`, `SHL1_A_MULB`) are executed if enabled.
+
+4. **Pipelining**  
+   - A 3-stage pipeline (`VALID_PIPE`) is used to delay and sequence data for multi-cycle operations (e.g., multiplication or comparison).
+   - Each valid input progresses through this pipeline until the result is ready.
+
+5. **Result Generation**  
+   - The output `RES` holds the final result.
+   - Status flags like `OFLOW` (overflow), `COUT` (carry-out), `ERR` (input error), and comparison flags `G`, `L`, `E` are computed based on operation type.
+
+6. **Error Handling**  
+   - If the input validity is incorrect or an undefined `CMD` is provided, the ALU sets `ERR = 1` and zeroes the result.
+
+
 ## Future Improvements
 
 - **Expand Operation Set**  
