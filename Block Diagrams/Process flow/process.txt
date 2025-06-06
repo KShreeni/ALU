@@ -1,1 +1,70 @@
+5. Implementation
+=================
+
+The ALU is implemented in Verilog as a parameterized and configurable module. It supports a variety of arithmetic, logical, shift, rotate, and special operations using a combination of control logic, pipelining, and operation decoding.
+
+➤ Parameterization
+------------------
+The ALU is defined using the following key parameters:
+• width_OP: Defines the operand bit-width (default is 8 bits).
+• width_cmd: Specifies the number of bits for operation command decoding (4 bits).
+• The result width is determined using:
+    - width = width_OP + 1 for normal operations.
+    - width = width_OP * 2 if multiplication is enabled using IS_MUL_OP.
+
+➤ Operation Control
+-------------------
+Operation decoding is implemented using local parameters for each command (e.g., ADD, SUB, INC_A, ROL_A_B, etc.). This enables both arithmetic and logical functions to be controlled by a single CMD input.
+
+➤ Dual-Mode Support
+-------------------
+The ALU supports two modes controlled by the MODE signal:
+• MODE = 1 (Arithmetic): Enables arithmetic, comparison, and multiplication operations.
+• MODE = 0 (Logic): Enables logical, shift, and rotate operations.
+
+➤ Pipelining and Input Validation
+---------------------------------
+A 3-stage pipeline is used via the VALID_PIPE shift register to control multi-cycle operations like multiply and rotate:
+• VALID_PIPE ensures correct timing and sequencing of operations.
+• The input validity is enforced using a 2-bit INP_VALID signal:
+    - 2'b11 – both operands valid
+    - 2'b01 – only OPA valid
+    - 2'b10 – only OPB valid
+This scheme prevents the ALU from performing incorrect operations with invalid inputs.
+
+➤ Arithmetic Operations
+------------------------
+• Addition/Subtraction (ADD, SUB, ADD_CIN, SUB_CIN) are implemented using intermediate registers to capture operands and compute results.
+• Overflow (OFLOW) and Carry-out (COUT) are derived based on result width and sign bits.
+
+➤ Comparison Operations
+------------------------
+• The CMP, S_UNS_ADD, and S_UNS_SUB commands set three flags: G (greater), L (less), and E (equal), based on signed operand comparisons.
+
+➤ Logical Operations
+---------------------
+• Standard bitwise operations: AND, OR, XOR, XNOR, NAND, NOR, NOT_A, NOT_B.
+• Operands are latched and processed after one cycle for timing alignment.
+
+➤ Shift & Rotate Operations
+----------------------------
+• Single-bit Shift: SHL1_A, SHR1_A, SHL1_B, SHR1_B perform 1-bit logical shifts.
+• Rotate:
+    - ROL_A_B: Rotate left OPA by OPB positions
+    - ROR_A_B: Rotate right OPA by OPB positions
+    - A check is performed to reject large shift counts by checking higher bits of OPB.
+
+➤ Multiplication Operations
+----------------------------
+• Conditional multiplication (IS_MUL_OP) supports:
+    - INC1_MUL: (OPA + 1) * (OPB + 1)
+    - SHL1_A_MULB: (OPA << 1) * OPB
+• These require two pipeline stages before result generation.
+
+➤ Error Handling
+-----------------
+If invalid inputs or command mismatches are detected:
+• The output RES is cleared to zero.
+• The ERR signal is set high.
+• This provides a hardware-friendly way to report invalid scenarios.
 
