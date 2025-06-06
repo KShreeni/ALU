@@ -1,6 +1,6 @@
 # ALU Design Project
 
-## 1. Introduction
+## Introduction
 
 This project implements a **parameterized Arithmetic Logic Unit (ALU)** that supports:
 - Arithmetic operations (add, sub, inc, dec, etc.)
@@ -15,7 +15,7 @@ The ALU is designed to be:
 
 ---
 
-## 2. Objectives
+## Objectives
 
 -  Design a **flexible and parameterized ALU** supporting a wide range of arithmetic and logical operations.
 -  Implement **pipelined execution**, supporting 2 or 3 clock cycle latency based on operation type.
